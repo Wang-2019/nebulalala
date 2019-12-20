@@ -11,7 +11,7 @@
 using nebula::time::Duration;
 
 TEST(Duration, elapsedInSeconds) {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 3; i++) {
         Duration dur;
         auto start = std::chrono::steady_clock::now();
         sleep(2);
@@ -42,6 +42,20 @@ TEST(Duration, elapsedInMilliSeconds) {
 }
 
 
+TEST(Duration, elapsedInMicroSeconds) {
+    Duration dur;
+    for (int i = 0; i< 10; i++) {
+        dur.reset();
+        auto start = std::chrono::steady_clock::now();
+        usleep(3);
+        auto diff = std::chrono::steady_clock::now() - start;
+        dur.pause();
+        ASSERT_LE(std::chrono::duration_cast<std::chrono::microseconds>(diff).count() - 3,
+                    dur.elapsedInUSec()) << "Inaccuracy in iteration " << i;
+        ASSERT_GE(std::chrono::duration_cast<std::chrono::microseconds>(diff).count() + 3,
+                    dur.elapsedInUSec()) << "Inaccuracy in iteration " << i;
+    }
+}
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     folly::init(&argc, &argv, true);
